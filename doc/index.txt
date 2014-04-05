@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<!--
+
+Dans l'environnement eclipse, ce fichier index.html se trouve dans :
+ workspace/helloworld/assets/www/index.html
+
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/131209_Css.css" />
+        <title>Hello World</title>
+
+        <!--div class="app">
+            <h1>Apache Cordova</h1>
+            <div id="deviceready" class="blink">
+                <p class="event listening">Connecting to Device</p>
+                <p class="event received">Device is Ready</p>
+            </div-->
+        </div>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript">
+
+     /* *************************************************************************
+       **                                                                      **
+       **                                                                      **
+       **                init Listener onDeviceReady                           **
+       **                                                                      **
+       **                                                                      **
+       ************************************************************************** */
+
+    // The watch id variable is set as a
+    // reference to the current 'watchAcceleration'
+    var watchID = null;
+    // Set the event listener to run
+    // when the device is ready
+    document.addEventListener("deviceready", onDeviceReady, false);
+    // The device is ready so let's
+    // start watching the acceleration
+    function onDeviceReady() {
+        startWatch();
+    }
+
+     /* *************************************************************************
+       **                                                                      **
+       **                                                                      **
+       **                start mesures chaque seconde                          **
+       **                id="startBtn"                                         **
+       **                                                                      **
+       ************************************************************************** */
+
+    // Watch the acceleration at regular
+    // intervals as set by the frequency
+    function startWatch() {
+        //alert("debut startWatch");
+        // Set the frequency of updates
+        // from the acceleration
+        var options = {
+            frequency : 1000
+        };
+        // Set attributes for control buttons
+
+        document.getElementById('startBtn').disabled = true;
+        document.getElementById('stopBtn').disabled = false;
+        // Assign watchAcceleration to the watchID variable
+        // and pass through the options array
+        watchID = navigator.accelerometer.watchAcceleration(onSuccess, onError,
+                options);
+    }
+
+    // Run if we face an error
+    // obtaining the accelerometer data
+    function onError() {
+        // Handle any errors we may face
+        var element = document.getElementById('accelerometerData');
+        element.innerHTML = 'watchID : erreur acces accelerometre';
+    }
+
+
+     /* *************************************************************************
+       **                                                                      **
+       **                                                                      **
+       **                stop mesures                                          **
+       **                id="stopBtn"                                          **
+       **                                                                      **
+       ************************************************************************** */
+
+    // Stop watching the acceleration
+    function stopWatch() {
+        //alert("xx="+document.getElementById('startBtn').disabled);
+        if (watchID) {
+            navigator.accelerometer.clearWatch(watchID);
+            watchID = null;
+
+            var element = document.getElementById('accelerometerData');
+
+            element.innerHTML = 'stopWatch : No longer watching your acceleration.'
+
+            // Set attributes for control buttons
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+        }
+    }
+
+    /* **************************************************************************
+       **                                                                      **
+       **                                                                      **
+       **                datas snapshot mesure                                 **
+       **                                                                      **
+       **                                                                      **
+       ************************************************************************** */
+var emissionPermise = false;
+var snapshotX;
+var snapshotY;
+var snapshotZ;
+
+
+
+
+    /* **************************************************************************
+       **                                                                      **
+       **                                                                      **
+       **                calcul des angles x, y et z                           **
+       **                                                                      **
+       **                                                                      **
+       ************************************************************************** */
+    var valeur = 0;
+    var car_signe=' ';
+    var signe  = 0;
+    var pFaible=0;
+    var pFort=0;
+/* 
+    
+    // transformer : version en "+/- degrés "
+    var precision_moins = 93;
+    var precision_plus = 94; 
+
+    var moins  = 1;
+    var plus   = 0;
+
+    var car_signe_plus='+';
+    var car_signe_moins='-';
+
+    function transformer(acceleration) {
+     acceleration=acceleration/10;
+
+     precision=precision_plus;
+     if (valeur<0) {
+       precision=precision_moins;
+     }
+     valeur=Math.floor( acceleration*precision );
+
+     signe=plus;
+     car_signe=car_signe_plus;
+     if (valeur<0) {
+       signe=moins;
+       car_signe=car_signe_moins;
+       valeur=valeur*-1;
+     }
+     if (valeur>90){valeur=90;}
+    }
+*/
+
+    // transformer : version en "0 => 200 "
+
+    function transformer(acceleration) { //$$
+     var erreur;
+     valeur=(acceleration*100)+1000;
+     var nMax=0;
+     var e=0;
+var avant=0;
+/*
+  e=erreur (mesures faites avec écran vertical)
+*/
+    if(valEnCour=='x'){
+     if(valeur<1000){ // valeur entre 0 et 1000
+      e=26; nMax=1000-e;
+//avant=valeur;
+      valeur= valeur-((1000-valeur)*(e/nMax));
+//afficheMessage(avant+" , "+valeur);
+     }else{ // valeur entre 1000 et 2000
+      e=100; nMax=2000-e;
+//avant=valeur;
+      valeur= (valeur-1000)*(1+(e/nMax));
+      valeur=valeur+1000;
+//afficheMessage("* "+avant+" , "+valeur);
+     }
+    }
+
+    if(valEnCour=='y'){
+     if(valeur<1000){ // valeur entre 0 et 1000
+      e=10; nMax=1000-e;
+//avant=valeur;
+      valeur= valeur-((1000-valeur)*(e/nMax));
+//afficheMessage(avant+" , "+valeur);
+     }else{ // valeur entre 1000 et 2000
+      e=90; nMax=2000-e;
+//avant=valeur;
+      valeur= (valeur-1000)*(1+(e/nMax));
+      valeur=valeur+1000;
+//afficheMessage("* "+avant+" , "+valeur);
+     }
+    }
+
+    valeur=Math.floor( valeur );
+    if (valeur <   0){valeur=  0;}
+    if (valeur > 2000){valeur=2000;}
+
+    pFaible=valeur % 256;
+    pFort=valeur / 256;
+
+
+    }
+
+
+    /* **************************************************************************
+       **                                                                      **
+       **                                                                      **
+       **                remplissage message datagramme                        **
+       **                                                                      **
+       **                                                                      **
+       ************************************************************************** */
+
+                                            
+   var datagramVersion  = 1;    // protocol version
+   var datagramSize     = 19;    // message size
+   var datagramType     = 3;    // message type. will define the payload
+
+   var datagramMessage; //  = [0,0];
+
+   function remplir() { //$$
+     
+    var i=0;
+    
+    datagramMessage = [];
+
+    datagramMessage[0]=datagramVersion;
+    datagramMessage[1]=datagramSize;
+    datagramMessage[2]=datagramType;
+    datagramMessage[3]=0;
+
+    datagramMessage[4]=0; // 4 boutons
+    datagramMessage[5]=0;
+    datagramMessage[6]=0;
+    datagramMessage[7]=0;
+
+    datagramMessage[8]=0; // X
+    datagramMessage[9]=0;
+    datagramMessage[10]=parseInt(pFortx);
+    datagramMessage[11]=parseInt(pFaiblex); // snapshotX+1-1;
+
+
+    datagramMessage[12]=0; // Y
+    datagramMessage[13]=0;
+    datagramMessage[14]=parseInt(pForty);
+    datagramMessage[15]=parseInt(pFaibley); // snapshotY+1-1;
+
+    datagramMessage[16]=0; // Z
+    datagramMessage[17]=0;
+    datagramMessage[18]=parseInt(pFortz);
+    datagramMessage[19]=parseInt(pFaiblez); // snapshotZ+1-1;
+
+   }
+
+
+
+    /* **************************************************************************
+       **                                                                      **
+       **                                                                      **
+       **                émission message datagramme                           **
+       **                                                                      **
+       **                                                                      **
+       ************************************************************************** */
+var adresseIp= "192.168.000.000"; // 192.168.0.199
+var numPort  = "8899";
+var numMessage=0;
+
+    function appelPluginTCP() { //$$
+var element = document.getElementById('accelerometerData');
+element.innerHTML = "message ("+(numMessage++)+")" ;
+
+var args = [datagramMessage];
+
+     // /home/leo/workspace/protoTCP_1/assets/www/plugins/fr.fablab.helloworld/www/pluginmodel.js
+     //PluginModel.essai(succes,error,datagramMessage);
+     PluginModel.essai(succes,errorEssai,args);
+    }
+
+    function succes(x) {
+     emissionOK=true;
+     //alert("SUCCESS 2 ("+x+")");
+    }
+
+    function errorEssai(x) {
+     alert("ERROR Essai ("+x+")");
+    }
+
+    function errorParam(x) {
+     alert("ERROR Param ("+x+")");
+    }
+
+    function startEmission(x) {
+     emissionPermise=true;
+     document.getElementById('startBtnEm').disabled = true;
+     document.getElementById('stopBtnEm').disabled = false;
+    }
+
+    function stopEmission(x) {
+     emissionPermise=false;
+     document.getElementById('startBtnEm').disabled = false;
+     document.getElementById('stopBtnEm').disabled = true;
+    }
+
+
+
+    /* **************************************************************************
+       **                                                                      **
+       **                                                                      **
+       **                affichage des données message datagramme              **
+       **                sur écran smartphone                                  **
+       **                                                                      **
+       ************************************************************************** */
+    // Run after successful transaction
+    // Let's display the accelerometer data
+
+var valeurx=0;
+//var signex=0;
+//var car_signex=0;
+
+var valeury=0;
+//var signey=0;
+//var car_signey=0;
+
+var valeurz=0;
+//var signexz=0;
+//var car_signez=0;
+
+var pFaiblex;
+var pFortx;
+var pFaibley;
+var pForty;
+var pFaiblez;
+var pFortz;
+var valEnCour='?';
+
+    function onSuccess(acceleration) { //une mesure vient d'être effectuée
+
+
+snapshotX=acceleration.x;
+snapshotY=acceleration.y;
+snapshotZ=acceleration.z;
+
+var element = document.getElementById('caseX');
+//transformer(acceleration.x);
+valEnCour='x';
+transformer(snapshotX);
+valeurx=valeur;
+pFaiblex = pFaible;
+pFortx   = pFort;
+//signex=signe;
+//car_signex=car_signe;
+//element.innerHTML = "("+car_signe+"/"+signe+") "+valeur;
+element.innerHTML ="X="+valeurx;
+
+element = document.getElementById('caseY');
+//element.innerHTML = acceleration.y;
+//transformer(acceleration.y);
+valEnCour='y';
+transformer(snapshotY);
+valeury=valeur;
+pFaibley = pFaible;
+pForty   = pFort;
+//signey=signe;
+//car_signey=car_signe;
+//element.innerHTML = "("+car_signe+"/"+signe+") "+valeur;
+element.innerHTML ="Y="+valeury;
+
+element = document.getElementById('caseZ');
+//element.innerHTML = acceleration.z;
+//transformer(acceleration.z);
+valEnCour='z';
+transformer(snapshotZ);
+valeurz=valeur;
+pFaiblez = pFaible;
+pFortz   = pFort;
+//signez=signe;
+//car_signez=car_signe;
+//element.innerHTML = "("+car_signe+"/"+signe+") "+valeur;
+element.innerHTML ="Z="+valeurz;
+
+envoi(); // envoi vérifie emissionPermise et emissionOK
+    }
+
+
+    /* **************************************************************************
+       **                                                                      **
+       **                initialisations...                                    **
+       **                                                                      **
+       ************************************************************************** */
+
+    function initBody() {
+     numMessage=0;
+     emissionPermise=false;
+     emissionOK=true;
+     document.getElementById('startBtn').disabled = false;
+     document.getElementById('stopBtn').disabled = false;
+     document.getElementById('startBtnEm').disabled = false;
+     document.getElementById('stopBtnEm').disabled = false;
+
+     ipValide=false;
+     getIp();
+
+    } // fin initBody()
+
+
+    function initLocal() {
+     numMessage=0;
+     emissionPermise=false;
+     emissionOK=true;
+     document.getElementById('startBtn').disabled = false;
+     document.getElementById('stopBtn').disabled = false;
+     document.getElementById('startBtnEm').disabled = false;
+     document.getElementById('stopBtnEm').disabled = false;
+     getIp();
+     afficheError("Valider l'adresse ip et nimport");
+
+    } // fin initLocal()
+
+
+    /* **************************************************************************
+       **                                                                      **
+       **                gestion ip et numport                                 **
+       **                                                                      **
+       ************************************************************************** */
+   var ipValide=false;
+
+   function validerIp() { //$$0
+    setIp();
+   }
+
+   function getIp() {
+    if (window.sessionStorage) {
+     //localStorage.getItem(adresseIp, numPort);
+     adresseIp = localStorage.getItem('ADRESSEIP');
+     numPort   = localStorage.getItem('NUMPORT');
+     document.getElementById('inputIp').value=adresseIp;
+     document.getElementById('inputPort').value=numPort;
+     //localStorage.removeItem('data'); //on supprime l'élément
+
+     var args = [adresseIp, numPort];
+
+     PluginModel.param(succes,errorParam,args);
+
+    }
+   }
+
+   function setIp() { //$$0
+    if (window.sessionStorage) {
+     adresseIp = document.getElementById('inputIp').value;
+     numPort   = document.getElementById('inputPort').value;
+     //localStorage.setItem(adresseIp, numPort);
+
+     if (typeof(localStorage) == 'undefined' ) {
+        alert('no localStorage.');
+     } else {
+        try {
+                localStorage.removeItem('ADRESSEIP');
+                localStorage.removeItem('NUMPORT');
+                localStorage.setItem('ADRESSEIP', adresseIp); //sauvegarde adresseIp
+                localStorage.setItem('NUMPORT', numPort);   //sauvegarde numPort
+                ipValide=true;
+  
+                var args = [adresseIp, numPort];
+
+                PluginModel.param(succes,errorParam,args);
+                //afficheNotif("ip et numport valides");
+                afficheNotif(adresseIp+":"+numPort);
+        } catch (e) {
+                 if (e == QUOTA_EXCEEDED_ERR) {
+                         alert('Taille max de données sauvegardées atteinte !');
+                        localStorage.clear(); //on vide les données
+                  ipValide=false;
+                }
+        }
+     }
+
+    }
+   }
+
+   function afficheError(message) {
+       var element = document.getElementById('accelerometerData');
+       element.setAttribute("class","divSepar1Rouge");
+       element.innerHTML = message;
+   }
+
+   function afficheNotif(message) {
+       var element = document.getElementById('accelerometerData');
+       element.setAttribute("class","divSepar1");
+       element.innerHTML = message;
+   }
+
+   function afficheMessage(message) { //$$1
+       var element = document.getElementById('accelerometerData');
+       element.setAttribute("class","divSepar1");
+       element.innerHTML = message;
+   }
+
+
+    function envoi() { // utimisé par en automatique //$$
+     if  (!ipValide){
+      //alert("Valider l'adresse ip et nimport");
+      afficheError("Valider l'adresse ip et nimport");
+     }else {
+      if ((emissionOK) && (emissionPermise)){
+        emissionOK=false;
+        remplir();
+        appelPluginTCP();
+      }
+     }
+    }
+
+    function envoiBtn() { //$$
+     if  (!ipValide){
+      //alert("Valider l'adresse ip et nimport");
+      afficheError("Valider l'adresse ip et nimport");
+     }else {
+      if ( (!(emissionPermise)) && ipValide){
+       remplir();
+       appelPluginTCP();
+      }
+     }
+    }
+
+/* */
+
+
+
+
+        </script>
+
+    </head>
+
+<body onload="initBody()">
+
+    <!--h1>Accelerometer Data f</h1-->
+<br/>
+    <button id="startBtn" onclick="startWatch()">start mesures</button>
+
+    <button id="stopBtn" onclick="stopWatch()">stop mesures</button>
+<br/>
+<br/>
+    <button id="startBtnEm" onclick="startEmission()">START EMISSION</button>
+
+    <button id="stopBtnEm" onclick="stopEmission()">STOP EMISSION</button>
+
+<br/><br/>
+    <button id="init" onclick="initLocal()">init</button>
+
+   <button id="envoi" onclick="envoiBtn()">envoi</button>
+<br/>
+  <div id="accelerometerData" class="divSepar1">???????</div>
+
+
+<br/>
+<div calss="divSepar1">
+<table border="2">
+ <tr>
+  <td>X=</td>
+  <td><div id="caseX" class="divSepar1">x</div></td>
+ </tr>
+ <tr>
+  <td>Y=</td>
+  <td><div id="caseY" class="divSepar1">y</div></td>
+ </tr>
+ <tr>
+  <td>Z=</td>
+  <td><div id="caseZ" class="divSepar1">z</div></td>
+ </tr>
+</table>
+</div>
+
+<br/><br/>
+<table>
+<tr>
+ <td>
+  <span class="labelText">IP</span>
+ </td>
+ <td class="labelText">
+  <span >PORT</span>
+ </td>
+ <td class="labelText">
+  
+ </td>
+</tr>
+<tr>
+ <td>
+  <input class="inputText" type="text" id="inputIp" size="15" maxlength="15" value="" />
+ </td>
+ <td>
+  <input class="inputText" type="text" id="inputPort" size="5" maxlength="5" value="" />
+ </td>
+ <td>
+  <button class="inputText" id="btnValiderIp" onclick="validerIp()">VALIDER</button>
+ </td>
+
+</tr>
+</table>
+
+    </body>
+</html>

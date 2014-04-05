@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+           id="fr.fablab.TCP"
+      version="1.1.0">
+	
+    <name>model de plugin</name>
+<engines>
+    <engine name="cordova" version=">=3.3.0" />
+</engines>
+    <description>Cordova TCP plugin</description>
+    <license>licencex</license>
+    <keywords>TCP</keywords>
+
+    <js-module src="www/pluginTCP.js" name="pluginTCP">
+        <clobbers target="pluginTCP" />
+    </js-module>
+    
+    <!-- android -->
+    <platform name="android">
+	    
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="pluginTCP">
+                <param name="android-package" value="fr.fablab.TCP.pluginTCP"/>
+            </feature>
+        </config-file>
+
+        <source-file src="src/android/PluginTCP.java" target-dir="src/fr/fablab/TCP" />
+    
+    </platform>
+
+</plugin>
