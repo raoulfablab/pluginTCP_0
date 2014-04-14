@@ -1,7 +1,7 @@
 /*
 FREE
 */
-package fr.fablab.TCP;
+package fr.fablab.TCP_0;
 
 
 import org.apache.cordova.CallbackContext;
@@ -69,8 +69,8 @@ public class PluginTCP extends CordovaPlugin {
 Le premier paramètre est le nom de l'action qui doit être exécuter. Dans notre cas c'est send. 
 Le deuxième paramètre est un objet contenant les arguments passés à la fonction essai 
 Le troisième paramètre est l'objet qui va permettre d'appeler les callback success et error
-/home/leo/Lsites/Projet/platforms/android/CordovaLib/src/org/apache/cordova/CordovaPlugin.java
-/home/leo/Lsites/Projeet/platforms/android/CordovaLib/src/org/apache/cordova/App.java
+/home/leo/Lsites/HelloWorld/helloworld/platforms/android/CordovaLib/src/org/apache/cordova/CordovaPlugin.java
+/home/leo/Lsites/HelloWorld/helloworld/platforms/android/CordovaLib/src/org/apache/cordova/App.java
 
 essai  => var args = [datagramMessage];
 ou

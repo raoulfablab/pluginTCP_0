@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-           id="fr.fablab.TCP"
+           id="fr.fablab.TCP_0"
       version="1.1.0">
 	
-    <name>model de plugin</name>
+    <name>pluginTCP_0</name>
 <engines>
     <engine name="cordova" version=">=3.3.0" />
 </engines>
@@ -20,12 +20,12 @@
     <platform name="android">
 	    
         <config-file target="res/xml/config.xml" parent="/*">
-            <feature name="pluginTCP">
-                <param name="android-package" value="fr.fablab.TCP.pluginTCP"/>
+            <feature name="PluginTCP">
+                <param name="android-package" value="fr.fablab.TCP_0.PluginTCP"/>
             </feature>
         </config-file>
 
-        <source-file src="src/android/PluginTCP.java" target-dir="src/fr/fablab/TCP" />
+        <source-file src="src/android/PluginTCP.java" target-dir="src/fr/fablab/TCP_0" />
     
     </platform>
 
